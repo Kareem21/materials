@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cost Sheet Form View -->
+    <record id="view_project_cost_sheet_form" model="ir.ui.view">
+        <field name="name">project.cost.sheet.form</field>
+        <field name="model">project.cost.sheet</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_draft" type="object" string="Set to Draft" invisible="state not in ['in_progress', 'done']"/>
+                    <button name="action_in_progress" type="object" string="Set to In Progress" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_done" type="object" string="Set to Done" invisible="state != 'in_progress'" class="oe_highlight"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="estimation_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group class="oe_subtotal_footer">
+                        <field name="total_budgeted_cost" widget="monetary"/>
+                    </group>
+                    <notebook>
+                        <page string="Cost Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="cost_code"/>
+                                    <field name="product_id"/>
+                                    <field name="cost_type"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="unit_cost"/>
+                                    <field name="budgeted_cost" sum="Total"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Cost Sheet Tree View -->
+    <record id="view_project_cost_sheet_tree" model="ir.ui.view">
+        <field name="name">project.cost.sheet.tree</field>
+        <field name="model">project.cost.sheet</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="date"/>
+                <field name="total_budgeted_cost" sum="Total"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+    
+    <record id="view_project_cost_sheet_search" model="ir.ui.view">
+        <field name="name">project.cost.sheet.search</field>
+        <field name="model">project.cost.sheet</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state','=','in_progress')]"/>
+                <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Status" name="status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+        <!-- Cost Sheet Line List View for popup -->
+        <record id="view_project_cost_sheet_line_popup_tree" model="ir.ui.view">
+            <field name="name">project.cost.sheet.line.popup.tree</field>
+            <field name="model">project.cost.sheet.line</field>
+            <field name="arch" type="xml">
+                <list string="Budget Lines" create="false" edit="false" delete="false">
+                    <field name="cost_sheet_id"/>
+                    <field name="cost_code"/>
+                    <field name="product_id"/>
+                    <field name="cost_type"/>
+                    <field name="quantity"/>
+                    <field name="uom_id"/>
+                    <field name="unit_cost"/>
+                    <field name="budgeted_cost"/>
+                </list>
+            </field>
+        </record>
+    <!-- Cost Sheet Action -->
+    <record id="action_project_cost_sheet" model="ir.actions.act_window">
+        <field name="name">Cost Sheets</field>
+        <field name="res_model">project.cost.sheet</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_project_cost_sheet_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new cost sheet
+            </p>
+            <p>
+                Cost sheets help you track and control budgets for your projects.
+            </p>
+        </field>
+    </record>
+</odoo>

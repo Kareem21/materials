@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Stock Request Form View -->
+    <record id="view_stock_request_form" model="ir.ui.view">
+        <field name="name">stock.request.form</field>
+        <field name="model">stock.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Submit" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_in_progress" type="object" string="In Progress" invisible="state != 'submitted'" class="oe_highlight"/>
+                    <button name="action_done" type="object" string="Done" invisible="state != 'in_progress'" class="oe_highlight"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state not in ['draft', 'submitted', 'in_progress']"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div style="margin-bottom: 16px; padding: 8px 16px; border-radius: 3px; background-color: #dc3545; color: white;" 
+                         invisible="not budget_warning">
+                        <strong>Budget Overrun: </strong> Some items exceed the budgeted quantities or costs.
+                    </div>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_budget" type="object" class="oe_stat_button" icon="fa-list-alt"
+                                invisible="line_ids == []">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Budget</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id"/>
+                            <field name="warehouse_id"/>
+                            <field name="location_id"/>
+                            <field name="budget_warning" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="expected_date"/>
+                            <field name="shipping_policy"/>
+                            <field name="route_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Items">
+                            <field name="line_ids">
+                    <list editable="bottom" decoration-danger="budget_status == 'overrun'" decoration-bf="budget_status == 'overrun'">
+                        <field name="product_id"/>
+                        <field name="name"/>
+                        <field name="quantity"/>
+                        <field name="uom_id"/>
+                        <field name="cost_sheet_line_id" options="{'no_create': True}"/>
+                        <field name="qty_in_progress"/>
+                        <field name="qty_done"/>
+                        <button name="find_cost_sheet_line" type="object" string="Find" icon="fa-search" help="Find matching cost sheet line"/>
+                        <field name="budget_status" invisible="1"/>
+                    </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Stock Request Tree View -->
+    <record id="view_stock_request_tree" model="ir.ui.view">
+        <field name="name">stock.request.tree</field>
+        <field name="model">stock.request</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="budget_warning" decoration-bf="budget_warning">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="date"/>
+                <field name="expected_date"/>
+                <field name="state"/>
+                <field name="budget_warning" invisible="1"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Stock Request Search View -->
+    <record id="view_stock_request_search" model="ir.ui.view">
+        <field name="name">stock.request.search</field>
+        <field name="model">stock.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <filter string="Budget Warning" name="budget_warning" domain="[('budget_warning','=',True)]"/>
+                <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Submitted" name="submitted" domain="[('state','=','submitted')]"/>
+                <filter string="In Progress" name="in_progress" domain="[('state','=','in_progress')]"/>
+                <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Status" name="status" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Stock Request Action -->
+    <record id="action_stock_request" model="ir.actions.act_window">
+        <field name="name">Stock Requests</field>
+        <field name="res_model">stock.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_stock_request_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new stock request
+            </p>
+            <p>
+                Stock requests help you request materials for your projects.
+            </p>
+        </field>
+    </record>
+</odoo>
+

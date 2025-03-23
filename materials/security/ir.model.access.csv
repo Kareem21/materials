@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_cost_sheet_all,project.cost.sheet.all_users,model_project_cost_sheet,,1,1,1,1
+access_project_cost_sheet_line_all,project.cost.sheet.line.all_users,model_project_cost_sheet_line,,1,1,1,1
+access_stock_request_all,stock.request.all_users,model_stock_request,,1,1,1,1
+access_stock_request_line_all,stock.request.line.all_users,model_stock_request_line,,1,1,1,1
