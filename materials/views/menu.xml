@@ -1,32 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Main Menu -->
-    <menuitem id="menu_project_material_budget_root" 
-              name="Material Budget" 
-              sequence="90" 
-              web_icon="project_material_budget,static/description/icon.png"/>
-              
+    <menuitem id="menu_project_material_budget_root"
+              name="Material Budget"
+              sequence="90"
+              web_icon="materials,static/description/icon.png"/>
+
     <!-- Cost Sheets Menu -->
-    <menuitem id="menu_project_material_budget_cost_sheets" 
-              name="Cost Sheets" 
-              parent="menu_project_material_budget_root" 
+    <menuitem id="menu_project_material_budget_cost_sheets"
+              name="Cost Sheets"
+              parent="menu_project_material_budget_root"
               sequence="10"/>
-              
-    <menuitem id="menu_project_cost_sheet" 
-              name="Cost Sheets" 
-              parent="menu_project_material_budget_cost_sheets" 
-              action="action_project_cost_sheet" 
+
+    <menuitem id="menu_project_cost_sheet"
+              name="Cost Sheets"
+              parent="menu_project_material_budget_cost_sheets"
+              action="action_project_cost_sheet"
               sequence="10"/>
-              
+
     <!-- Stock Requests Menu -->
-    <menuitem id="menu_project_material_budget_stock_requests" 
-              name="Material Requests" 
-              parent="menu_project_material_budget_root" 
+    <menuitem id="menu_project_material_budget_stock_requests"
+              name="Material Requests"
+              parent="menu_project_material_budget_root"
               sequence="20"/>
+
+    <menuitem id="menu_stock_request"
+              name="Material Requests"
+              parent="menu_project_material_budget_stock_requests"
+              action="action_stock_request"
+              sequence="10"/>
               
-    <menuitem id="menu_stock_request" 
-              name="Material Requests" 
-              parent="menu_project_material_budget_stock_requests" 
-              action="action_stock_request" 
+    <!-- Purchase Orders Menu -->
+    <menuitem id="menu_project_material_budget_purchase_orders"
+              name="Purchase Orders"
+              parent="menu_project_material_budget_root"
+              sequence="30"/>
+
+    <menuitem id="menu_purchase_orders_direct"
+              name="Purchase Orders"
+              parent="menu_project_material_budget_purchase_orders"
+              action="action_budget_purchase_orders"
               sequence="10"/>
 </odoo>

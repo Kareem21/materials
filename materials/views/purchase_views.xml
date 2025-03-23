@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit Purchase Order Form View -->
+    <record id="purchase_order_form_inherit_budget" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.budget</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add budget warning alert -->
+            <xpath expr="//sheet" position="before">
+                <div style="margin-bottom: 16px; padding: 8px 16px; border-radius: 3px; background-color: #dc3545; color: white;"
+                     invisible="not budget_warning">
+                    <strong>Budget Overrun: </strong> Some items exceed the budgeted quantities or costs.
+                </div>
+            </xpath>
+            
+            <!-- Add Budget button in button box -->
+            <div name="button_box" position="inside">
+                <button name="action_view_budget" type="object" class="oe_stat_button" icon="fa-list-alt"
+                        invisible="order_line == []">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Budget</span>
+                    </div>
+                </button>
+            </div>
+            
+            <!-- Add Project field -->
+            <field name="partner_id" position="after">
+                <field name="project_id"/>
+                <field name="budget_warning" invisible="1"/>
+            </field>
+            
+            <!-- Modify order lines to show budget status -->
+            <xpath expr="//field[@name='order_line']/list" position="attributes">
+                <attribute name="decoration-danger">budget_status == 'overrun'</attribute>
+                <attribute name="decoration-warning">budget_status == 'warning'</attribute>
+                <attribute name="decoration-bf">budget_status in ['warning', 'overrun']</attribute>
+            </xpath>
+            
+            <!-- Add cost sheet line to order lines -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="after">
+                <field name="cost_sheet_line_id" options="{'no_create': True}"/>
+                <button name="find_cost_sheet_line" type="object" string="Find" icon="fa-search" help="Find matching cost sheet line"/>
+            </xpath>
+            
+            <!-- Add budget status field to order lines (invisible but used for decoration) -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='price_subtotal']" position="after">
+                <field name="budget_status" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Inherit Purchase Order Tree View -->
+    <record id="purchase_order_tree_inherit_budget" model="ir.ui.view">
+        <field name="name">purchase.order.tree.inherit.budget</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-danger">budget_warning</attribute>
+                <attribute name="decoration-bf">budget_warning</attribute>
+            </xpath>
+            <field name="partner_id" position="after">
+                <field name="project_id"/>
+            </field>
+            <field name="company_id" position="after">
+                <field name="budget_warning" invisible="1"/>
+            </field>
+        </field>
+    </record>
+    
+    <!-- Create a new search view -->
+    <record id="purchase_order_search_budget" model="ir.ui.view">
+        <field name="name">purchase.order.search.budget</field>
+        <field name="model">purchase.order</field>
+        <field name="mode">primary</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Reference"/>
+                <field name="partner_id" operator="child_of"/>
+                <field name="project_id"/>
+                <field name="user_id"/>
+                <field name="currency_id" groups="base.group_multi_currency"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                
+                <filter name="draft" string="RFQs" domain="[('state','=','draft')]"/>
+                <filter name="waiting" string="Waiting" domain="[('state','in',('sent','to approve'))]"/>
+                <filter name="approved" string="Purchase Orders" domain="[('state','in',('purchase','done'))]"/>
+                <filter name="budget_warning" string="Budget Warning" domain="[('budget_warning','=',True)]"/>
+                
+                <group expand="0" string="Group By">
+                    <filter name="group_partner" string="Vendor" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_user" string="Purchase Representative" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_date" string="Order Date" context="{'group_by': 'date_order'}"/>
+                    <filter name="project" string="Project" context="{'group_by': 'project_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Create our custom action for purchase orders with budget features -->
+    <record id="action_budget_purchase_orders" model="ir.actions.act_window">
+        <field name="name">Purchase Orders</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="purchase_order_search_budget"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Purchase Order
+            </p>
+            <p>
+                Create purchase orders and control budgets for your projects.
+            </p>
+        </field>
+    </record>
+</odoo>

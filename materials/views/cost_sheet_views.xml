@@ -30,19 +30,49 @@
                         </group>
                     </group>
                     <group class="oe_subtotal_footer">
-                        <field name="total_budgeted_cost" widget="monetary"/>
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="total_budgeted_cost"/>
+                                <field name="total_budgeted_cost" widget="monetary" style="width: 100%;"/>
+                            </div>
+                            <div class="col-6">
+                                <label for="total_committed_amount"/>
+                                <field name="total_committed_amount" widget="monetary" style="width: 100%;"/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="total_actual_amount"/>
+                                <field name="total_actual_amount" widget="monetary" style="width: 100%;"/>
+                            </div>
+                            <div class="col-6">
+                                <label for="total_remaining_budget"/>
+                                <field name="total_remaining_budget" widget="monetary" style="width: 100%;"/>
+                            </div>
+                        </div>
                     </group>
                     <notebook>
                         <page string="Cost Lines">
+                            <button name="action_update_actuals" string="Update Actuals" type="object" class="btn btn-primary"
+                                    invisible="state != 'in_progress'"/>
+                            <button name="action_update_committed" string="Update Committed" type="object" class="btn btn-primary"
+                                    invisible="state != 'in_progress'"/>
                             <field name="line_ids">
-                                <list editable="bottom">
+                                <list editable="bottom" decoration-danger="budget_status == 'overrun'" decoration-warning="budget_status == 'warning'" decoration-bf="budget_status != 'ok'">
                                     <field name="cost_code"/>
                                     <field name="product_id"/>
                                     <field name="cost_type"/>
+                                    <!-- Budget fields -->
                                     <field name="quantity"/>
                                     <field name="uom_id"/>
                                     <field name="unit_cost"/>
-                                    <field name="budgeted_cost" sum="Total"/>
+                                    <field name="budgeted_cost" sum="Total Budgeted"/>
+                                    <!-- Tracking fields -->
+                                    <field name="committed_quantity" sum="Total Committed Qty"/>
+                                    <field name="committed_amount" sum="Total Committed"/>
+                                    <field name="actual_amount" sum="Total Actual"/>
+                                    <field name="remaining_budget" sum="Total Remaining"/>
+                                    <field name="budget_status"/>
                                     <field name="currency_id" invisible="1"/>
                                 </list>
                             </field>
@@ -62,7 +92,10 @@
                 <field name="name"/>
                 <field name="project_id"/>
                 <field name="date"/>
-                <field name="total_budgeted_cost" sum="Total"/>
+                <field name="total_budgeted_cost" sum="Total Budgeted"/>
+                <field name="total_committed_amount" sum="Total Committed"/>
+                <field name="total_actual_amount" sum="Total Actual"/>
+                <field name="total_remaining_budget" sum="Total Remaining"/>
                 <field name="state"/>
             </list>
         </field>
@@ -91,15 +124,22 @@
             <field name="name">project.cost.sheet.line.popup.tree</field>
             <field name="model">project.cost.sheet.line</field>
             <field name="arch" type="xml">
-                <list string="Budget Lines" create="false" edit="false" delete="false">
+                <list string="Budget Lines" create="false" edit="false" delete="false" decoration-danger="budget_status == 'overrun'" decoration-warning="budget_status == 'warning'" decoration-bf="budget_status != 'ok'">
                     <field name="cost_sheet_id"/>
                     <field name="cost_code"/>
                     <field name="product_id"/>
                     <field name="cost_type"/>
+                    <!-- Budget fields -->
                     <field name="quantity"/>
                     <field name="uom_id"/>
                     <field name="unit_cost"/>
                     <field name="budgeted_cost"/>
+                    <!-- Tracking fields -->
+                    <field name="committed_quantity"/>
+                    <field name="committed_amount"/>
+                    <field name="actual_amount"/>
+                    <field name="remaining_budget"/>
+                    <field name="budget_status"/>
                 </list>
             </field>
         </record>
