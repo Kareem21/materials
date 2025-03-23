@@ -1,0 +1,4 @@
+*.pyc
+*.vscode
+codemcp.toml
+odoo18.md

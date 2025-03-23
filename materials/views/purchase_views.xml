@@ -69,12 +69,11 @@
         </field>
     </record>
     
-    <!-- Create a new search view -->
+    <!-- Inherit Purchase Order Search View - Create a new search view instead of inheriting -->
     <record id="purchase_order_search_budget" model="ir.ui.view">
         <field name="name">purchase.order.search.budget</field>
         <field name="model">purchase.order</field>
         <field name="mode">primary</field>
-        <field name="priority">100</field>
         <field name="arch" type="xml">
             <search>
                 <field name="name" string="Reference"/>
@@ -100,20 +99,8 @@
         </field>
     </record>
     
-    <!-- Create our custom action for purchase orders with budget features -->
-    <record id="action_budget_purchase_orders" model="ir.actions.act_window">
-        <field name="name">Purchase Orders</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">purchase.order</field>
-        <field name="view_mode">list,form,calendar</field>
+    <!-- Set our search view as default for purchase orders -->
+    <record id="purchase.purchase_order_action" model="ir.actions.act_window">
         <field name="search_view_id" ref="purchase_order_search_budget"/>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Create a Purchase Order
-            </p>
-            <p>
-                Create purchase orders and control budgets for your projects.
-            </p>
-        </field>
     </record>
 </odoo>
